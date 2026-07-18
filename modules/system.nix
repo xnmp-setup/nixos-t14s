@@ -115,7 +115,7 @@
     nerd-fonts.victor-mono
     nerd-fonts.fantasque-sans-mono
     inter                   # UI font
-    ubuntu_font_family
+    ubuntu-classic          # renamed from ubuntu_font_family in nixpkgs
     font-awesome            # waybar/wofi icon sets
   ];
 
