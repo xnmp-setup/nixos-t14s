@@ -9,7 +9,9 @@
 
   networking.hostName = "t14s";
 
-  # Set this to the release you FIRST install (see `nixos-version`) and then
-  # never change it — it pins stateful defaults, not your package versions.
+  # Pins stateful defaults, not package versions. Set once, then never change it.
+  # NOTE: the pinned nixpkgs actually builds 26.11, so `nixos-version` will report
+  # 26.11, not this. That's fine and deliberate — older is the conservative
+  # direction for stateVersion. Do not "correct" it to match after installing.
   system.stateVersion = "25.11";
 }

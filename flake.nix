@@ -6,6 +6,9 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    # Without this, nixos-hardware drags in a SECOND full nixpkgs — a needless
+    # multi-hundred-MB fetch over Wi-Fi during the install.
+    nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, nixos-hardware, ... }@inputs:
@@ -16,8 +19,14 @@
         inherit system;
         specialArgs = { inherit inputs; };
         modules = [
-          # Hardware (guaranteed-to-exist building blocks). If nixos-hardware gains a
-          # `lenovo-thinkpad-t14s-amd-gen3` profile, prefer it — check `nix flake show`.
+          # There is no `-amd-gen3` profile for the T14s. The generic one is the right
+          # pick: it only adds `acpi_backlight=native` (its linuxPackages_latest line is
+          # a dead `versionOlder "5.2"` guard).
+          # Do NOT substitute `lenovo-thinkpad-t14s-amd-gen1` — it forces
+          # `mem_sleep_default=deep`, and this CPU generation is s2idle-only. Setting
+          # deep sleep here crashes on suspend.
+          nixos-hardware.nixosModules.lenovo-thinkpad-t14s
+
           nixos-hardware.nixosModules.common-cpu-amd
           nixos-hardware.nixosModules.common-cpu-amd-pstate
           nixos-hardware.nixosModules.common-gpu-amd

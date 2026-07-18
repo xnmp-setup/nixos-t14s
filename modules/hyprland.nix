@@ -29,6 +29,8 @@
     enable = true;
     plugins = with pkgs; [ thunar-archive-plugin thunar-volman ];
   };
+  services.gvfs.enable = true;  # without this Thunar cannot mount USB drives or use trash
+  services.tumbler.enable = true; # thumbnails
 
   # Your Wayland toolkit — reflects what's installed on your desktop.
   environment.systemPackages = with pkgs; [
@@ -40,6 +42,11 @@
     brightnessctl playerctl
     gammastep     # night-light / colour temperature
     imv           # image viewer
+    # polkit authentication agent. security.polkit is only the daemon; Hyprland
+    # starts no agent of its own, so without this every GUI privilege prompt
+    # (Thunar mounting a drive, fwupd, NetworkManager) fails silently.
+    # Needs `exec-once = systemctl --user start hyprpolkitagent` in your chezmoi hypr config.
+    hyprpolkitagent
     # No notification daemon was installed on your desktop — add one if you want,
     # e.g. `mako` or `swaynotificationcenter`, then configure it via chezmoi:
     # mako

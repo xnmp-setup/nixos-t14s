@@ -35,8 +35,13 @@
 
   # Cache Rust builds globally; enable the mold linker per-project (README) so it
   # never surprises a build expecting the default linker.
+  #
+  # Absolute store path, not the bare name: this var is exported for every user and
+  # every context, including `nix develop` shells, systemd units and containers where
+  # `sccache` is not on PATH. With a bare "sccache" those builds fail hard rather than
+  # degrading to an uncached build.
   environment.variables = {
-    RUSTC_WRAPPER = "sccache";
+    RUSTC_WRAPPER = "${pkgs.sccache}/bin/sccache";
   };
 
   # Containers: you use docker here, but it's left off the lean box. To enable:

@@ -3,7 +3,29 @@
   # --- Boot ---
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest; # fresh kernel = happiest amdgpu
+
+  # Deliberately the nixpkgs default kernel, NOT linuxPackages_latest. Rembrandt
+  # (Radeon 680M) has been fully supported since ~5.17, so tracking mainline buys
+  # nothing here and costs out-of-tree module breakage on a laptop with no fallback OS.
+  # boot.kernelPackages = pkgs.linuxPackages_6_18; # pin explicitly if you ever need to
+
+  # Panel Self Refresh on this model causes flicker, corruption, and post-suspend
+  # `flip_done timed out` freezes. Still open upstream (drm/amd#2735). Drop this
+  # param and rebuild if a future kernel fixes it — it costs a little idle power.
+  boot.kernelParams = [ "amdgpu.dcdebugmask=0x10" ];
+
+  # Wi-Fi/GPU/Bluetooth firmware + AMD microcode. The generated hardware-configuration.nix
+  # normally brings this in via not-detected.nix, but it is far too important to inherit
+  # implicitly: without it there is no Wi-Fi on first boot, and no Ethernet port to fall
+  # back on.
+  hardware.enableRedistributableFirmware = true;
+
+  # 8GB swapfile. Declared here rather than created by hand at install time, because
+  # `nixos-generate-config` deliberately ignores swap *files* and would silently leave
+  # the system with no swap at all. NixOS creates the file on activation.
+  swapDevices = [ { device = "/.swapfile"; size = 8192; } ];
+
+  services.fstrim.enable = true; # NVMe longevity
 
   # --- Networking ---
   networking.networkmanager.enable = true;
@@ -24,20 +46,31 @@
   };
 
   # --- Battery & thermals: matters for working away from a wall socket ---
-  services.power-profiles-daemon.enable = false; # conflicts with TLP
+  # Required: since TLP 1.6.0, TLP silently skips BOTH the platform-profile and
+  # charge-threshold settings below if power-profiles-daemon is running.
+  services.power-profiles-daemon.enable = false;
   services.tlp = {
     enable = true;
     settings = {
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      # On AMD the platform profile IS the power-management path — setting
+      # CPU_ENERGY_PERF_POLICY_* alongside it means the two stomp on each other
+      # (see TLP's ppd FAQ). Platform profile only, deliberately.
       PLATFORM_PROFILE_ON_BAT = "low-power";
       PLATFORM_PROFILE_ON_AC = "performance";
       # Protect a used battery: only charge 40%->80% for daily desk use.
-      # Bump STOP to 100 the night before a long day out.
+      # For a long day out run `sudo tlp fullcharge` — one-shot, no rebuild, and
+      # TLP restores these thresholds by itself on the next unplug. Do NOT "just set
+      # STOP to 100": on ThinkPads that *disables* the threshold rather than
+      # setting a 100% target.
       START_CHARGE_THRESH_BAT0 = 40;
       STOP_CHARGE_THRESH_BAT0 = 80;
     };
   };
+
+  # Spurious wakeups from the touchpad drain the battery in a closed bag.
+  services.udev.extraRules = ''
+    KERNEL=="i2c-SYNA8018:00", SUBSYSTEM=="i2c", ATTR{power/wakeup}="disabled"
+  '';
 
   services.fwupd.enable = true; # ThinkPad firmware updates from Linux
 
