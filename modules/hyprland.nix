@@ -35,7 +35,14 @@
   # Your Wayland toolkit — reflects what's installed on your desktop.
   environment.systemPackages = with pkgs; [
     waybar
-    wofi          # launcher (NOTE: vicinae isn't in nixpkgs — bring it via your own install)
+    wofi          # fallback launcher
+    vicinae       # your actual launcher — it IS in nixpkgs now; the README's
+                  # "not packaged, bring your own" note was stale.
+    flameshot     # you have this alongside hyprshot on the desktop
+    nwg-look      # GTK theme/font settings for a Wayland session
+    gnome-themes-extra
+    seahorse      # GUI for the gnome-keyring secrets your apps store
+    libayatana-appindicator # tray icons for Electron/GTK apps (YT Music, Docker, etc.)
     hyprpaper     # wallpaper (you use this, not swww)
     hyprshot      # screenshots (you use this, not grim/slurp)
     wl-clipboard

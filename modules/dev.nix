@@ -16,6 +16,13 @@
     zoxide fzf ripgrep fd bat eza jq yazi
     zellij tmux
     gh gh-dash lazygit
+    # Present on the desktop and previously missed here:
+    dust ncdu             # disk usage
+    csvlens tidy-viewer   # CSV viewing in the terminal
+    handlr-regex          # xdg-open replacement / default-app routing
+    shfmt
+    less unzip whois socat ffmpeg
+    xclip xsel wtype      # clipboard + synthetic input (wl-clipboard is in hyprland.nix)
 
     # --- Languages / build ---
     nodejs_22
@@ -29,8 +36,16 @@
     # --- Sync / cloud (syncthing runs as a service in system.nix) ---
     rclone
 
-    # --- Browser ---
+    # --- Browsers ---
     google-chrome
+    vivaldi       # chezmoi manages .config/vivaldi AND a vivaldi-mods/ tree, so this
+                  # is clearly in real use on the desktop — it was missing here.
+
+    # --- Tauri toolchain ---
+    # You maintain github.com/xnmp/tauri-explorer, which is NOT in nixpkgs (see README).
+    # These are what it needs to build from source on this machine.
+    cargo-tauri
+    webkitgtk_4_1
   ];
 
   # Cache Rust builds globally; enable the mold linker per-project (README) so it

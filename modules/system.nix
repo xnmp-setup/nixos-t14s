@@ -108,6 +108,15 @@
   fonts.packages = with pkgs; [
     commit-mono
     nerd-fonts.symbols-only # icon glyphs for waybar/prompt
+    # The rest of the desktop's font set — without these, anything in your chezmoi
+    # configs that names a font you don't have here silently falls back.
+    cascadia-code
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.victor-mono
+    nerd-fonts.fantasque-sans-mono
+    inter                   # UI font
+    ubuntu_font_family
+    font-awesome            # waybar/wofi icon sets
   ];
 
   # --- Nix ---

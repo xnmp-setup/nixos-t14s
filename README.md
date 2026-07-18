@@ -21,58 +21,67 @@ modules/
 
 ## What's installed (reflected from your desktop)
 
+Reconciled against `pacman -Qe` on the Arch desktop, so this list is measured, not remembered.
+
 - **Terminals:** wezterm, ghostty, kitty
 - **Editors:** zed, lite-xl, obsidian, micro *(vscode left off the lean box — commented)*
-- **Shell/CLI:** zsh, fish, atuin, zoxide, fzf, ripgrep, fd, bat, eza, jq, yazi, zellij, tmux, gh, gh-dash, lazygit
-- **Langs:** node, uv (Python), go, rustup + mold + sccache
-- **Desktop:** Hyprland, hyprlock, hyprpaper, hyprshot, waybar, wofi, gammastep, imv, thunar
-- **Other:** google-chrome, rclone, syncthing (service), chezmoi
+- **Browsers:** google-chrome, vivaldi
+- **Shell/CLI:** zsh, fish, atuin, zoxide, fzf, ripgrep, fd, bat, eza, jq, yazi, zellij, tmux,
+  gh, gh-dash, lazygit, dust, ncdu, csvlens, tidy-viewer, handlr-regex, shfmt, less, unzip,
+  whois, socat, ffmpeg, xclip/xsel/wtype
+- **Langs:** node, uv (Python), go, rustup + mold + sccache, cargo-tauri + webkitgtk_4_1
+- **Desktop:** Hyprland, hyprlock, hyprpaper, hyprshot, waybar, wofi, vicinae, flameshot,
+  gammastep, imv, thunar, nwg-look, seahorse, hyprpolkitagent
+- **Other:** rclone, syncthing (service), chezmoi
+
+**Deliberately NOT carried over from the desktop:** nvidia-*, qemu/libvirt/virt-manager,
+docker-desktop, vagrant, grub/os-prober, nvm. Desktop-only or wrong for an AMD laptop
+booting systemd-boot.
 
 **Not installed via nix (bring your own way):**
 - **Claude Code** — native self-updating installer: `curl -fsSL https://claude.ai/install.sh | bash`
-- **vicinae** (launcher) and **lpm** (Lite XL plugin mgr) — not in nixpkgs; install via your own method
+- **tauri-explorer** — your own project (github.com/xnmp/tauri-explorer), not in nixpkgs.
+  Build from source; `cargo-tauri` + `webkitgtk_4_1` are installed for exactly this.
+- **lpm** (Lite XL plugin mgr) — genuinely not in nixpkgs.
 - **rtk**, **bd/beads**, **ccstatusline** — your custom tools, via chezmoi / their own installers
 
-## Install on the laptop (day it arrives)
+*(`vicinae` used to be listed here as unpackaged. It is in nixpkgs now and is installed.)*
 
-1. **Acceptance test first** (no returns — do this before wiping Windows). Boot the NixOS
-   installer USB and confirm you got what you paid for:
-   ```bash
-   lscpu | grep -E 'Model name|^CPU\(s\)'      # Ryzen 7 PRO 6850U, 16 threads
-   free -h                                      # ~31Gi
-   lsblk -d -o NAME,SIZE,MODEL                   # ~476G NVMe
-   lspci | grep -iE 'vga|display'                # Radeon 680M (Rembrandt)
-   cat /sys/class/power_supply/BAT0/charge_full{,_design}   # battery health = full ÷ design
-   ```
+## Where each app's settings come from
 
-2. **Partition + mount** (UEFI: an ESP + a root), then generate the real hardware config:
-   ```bash
-   sudo nixos-generate-config --root /mnt
-   ```
+NixOS installs binaries; it does not carry settings. Three different mechanisms do:
 
-3. **Drop this repo in and swap the hardware file:**
-   ```bash
-   git clone <your-repo> /mnt/home/chong/Repos/nixos-t14s
-   cp /mnt/etc/nixos/hardware-configuration.nix \
-      /mnt/home/chong/Repos/nixos-t14s/hosts/t14s/hardware-configuration.nix
-   ```
+| Source | Apps |
+|---|---|
+| **chezmoi** | wezterm, ghostty, hypr, yazi, zellij, lite-xl, micro, zed, imv, vivaldi, VS Code, zsh/p10k, gitconfig, ccstatusline, `.local/bin`, scripts |
+| **Syncthing** | **Obsidian** — settings live in `~/Vaults/*/.obsidian`, inside the vault, so they ride the vault sync rather than chezmoi |
+| **nothing yet** | kitty, fish, atuin, gh, gh-dash, lazygit, rclone, uv, gammastep, vicinae — these have config on the desktop that chezmoi does **not** track, so they will arrive at defaults |
 
-4. **Install, then reboot:**
-   ```bash
-   sudo nixos-install --flake /mnt/home/chong/Repos/nixos-t14s#t14s
-   ```
+That last row is the real gap: those settings exist on the desktop but nothing carries them.
+Add them to chezmoi before the migration if you care about them. waybar, wofi, hyprpaper and
+hyprshot have no config on the desktop either, so they are already at parity (bare on both).
 
-5. **After first boot — lay down your world:**
-   ```bash
-   chezmoi init --apply <your-dotfiles-repo>      # Hyprland, wezterm, zsh/p10k, scripts
-   curl -fsSL https://claude.ai/install.sh | bash # Claude Code (native)
-   sudo nixos-rebuild switch --flake ~/Repos/nixos-t14s#t14s   # iterate from here
-   ```
+## Install on the laptop
+
+**See [INSTALL.md](INSTALL.md)** — the full walkthrough: wipe Windows, LUKS + ext4,
+firmware and BIOS prep, recovery paths, and T14s-specific troubleshooting.
+
+An abbreviated copy of those steps used to live here and had drifted out of sync (no
+LUKS, a battery command that errors on this model, and it omitted committing the
+generated hardware config). One source of truth instead.
+
+Sanity-check the config on another x86_64 Linux box before install day:
+
+```bash
+nix build --no-link .#nixosConfigurations.t14s.config.system.build.toplevel
+nixos-rebuild build-vm --flake .#t14s && ./result/bin/run-t14s-vm   # watch it actually boot
+```
 
 ## Notes
 
-- **stateVersion**: set `system.stateVersion` to whatever `nixos-version` shows at
-  install, then never change it.
+- **stateVersion**: `25.11`, deliberately. The pinned nixpkgs builds 26.11, so
+  `nixos-version` will disagree — that is fine and intended. Older is the conservative
+  direction. Set once, never "correct" it.
 - **Rust build speed**: `sccache` is wired globally. Enable **mold** per-project via
   `<project>/.cargo/config.toml`:
   ```toml
@@ -81,7 +90,9 @@ modules/
   rustflags = ["-C", "link-arg=-fuse-ld=mold"]
   ```
   For heavier crates, prefer a per-project `nix develop` devshell over global tools.
-- **Battery**: charge capped 40–80% to nurse a used cell; raise `STOP_CHARGE_THRESH_BAT0`
-  to 100 the night before a long day out.
+- **Battery**: charge capped 40–80% to nurse a used cell. For a long day out run
+  `sudo tlp fullcharge` — one-shot, no rebuild, thresholds restore themselves on the next
+  unplug. Do **not** set `STOP_CHARGE_THRESH_BAT0 = 100`: on ThinkPads that *disables* the
+  threshold rather than targeting 100%.
 - **Notifications**: no daemon was installed on your desktop — add `mako` (in
   `modules/hyprland.nix`) if you want them, and configure via chezmoi.
