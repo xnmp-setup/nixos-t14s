@@ -38,11 +38,11 @@
     wofi          # fallback launcher
     vicinae       # your actual launcher — it IS in nixpkgs now; the README's
                   # "not packaged, bring your own" note was stale.
-    flameshot     # you have this alongside hyprshot on the desktop
-    nwg-look      # GTK theme/font settings for a Wayland session
-    gnome-themes-extra
-    seahorse      # GUI for the gnome-keyring secrets your apps store
-    libayatana-appindicator # tray icons for Electron/GTK apps (YT Music, Docker, etc.)
+    # Screenshots: hyprshot only. hyprland.conf:130 binds
+    #   $mainMod SHIFT, S -> hyprshot -m region --clipboard-only
+    # and the nixpkgs wrapper already carries grim, slurp, wl-clipboard, jq and
+    # libnotify, so that keybind works with nothing else installed. flameshot is on
+    # the desktop but unused, and is deliberately not carried over.
     hyprpaper     # wallpaper (you use this, not swww)
     hyprshot      # screenshots (you use this, not grim/slurp)
     wl-clipboard

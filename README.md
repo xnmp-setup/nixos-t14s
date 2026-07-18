@@ -25,13 +25,19 @@ Reconciled against `pacman -Qe` on the Arch desktop, so this list is measured, n
 
 - **Terminals:** wezterm, ghostty, kitty
 - **Editors:** zed, lite-xl, obsidian, micro *(vscode left off the lean box — commented)*
-- **Browsers:** google-chrome, vivaldi
+- **Browser:** google-chrome *(vivaldi is on the desktop but deliberately left off the lean box)*
 - **Shell/CLI:** zsh, fish, atuin, zoxide, fzf, ripgrep, fd, bat, eza, jq, yazi, zellij, tmux,
   gh, gh-dash, lazygit, dust, ncdu, csvlens, tidy-viewer, handlr-regex, shfmt, less, unzip,
   whois, socat, ffmpeg, xclip/xsel/wtype
 - **Langs:** node, uv (Python), go, rustup + mold + sccache, cargo-tauri + webkitgtk_4_1
-- **Desktop:** Hyprland, hyprlock, hyprpaper, hyprshot, waybar, wofi, vicinae, flameshot,
-  gammastep, imv, thunar, nwg-look, seahorse, hyprpolkitagent
+- **Desktop:** Hyprland, hyprlock, hyprpaper, hyprshot, waybar, wofi, vicinae, gammastep,
+  imv, thunar, hyprpolkitagent
+  - *Screenshots are hyprshot* — `hyprland.conf:130` binds `$mainMod SHIFT, S` to
+    `hyprshot -m region --clipboard-only`. The nixpkgs wrapper carries grim/slurp/
+    wl-clipboard/jq/libnotify, so nothing else is needed. flameshot is installed on the
+    desktop but unused, and is not carried over.
+  - GTK theming (nwg-look, gnome-themes-extra), seahorse and libayatana-appindicator are
+    on the desktop and deliberately left off.
 - **Other:** rclone, syncthing (service), chezmoi
 
 **Deliberately NOT carried over from the desktop:** nvidia-*, qemu/libvirt/virt-manager,
@@ -41,7 +47,8 @@ booting systemd-boot.
 **Not installed via nix (bring your own way):**
 - **Claude Code** — native self-updating installer: `curl -fsSL https://claude.ai/install.sh | bash`
 - **tauri-explorer** — your own project (github.com/xnmp/tauri-explorer), not in nixpkgs.
-  Build from source; `cargo-tauri` + `webkitgtk_4_1` are installed for exactly this.
+  A proper Nix derivation for it is in progress; until then `cargo-tauri` + `webkitgtk_4_1`
+  are installed so it can be built from source here.
 - **lpm** (Lite XL plugin mgr) — genuinely not in nixpkgs.
 - **rtk**, **bd/beads**, **ccstatusline** — your custom tools, via chezmoi / their own installers
 
@@ -58,8 +65,12 @@ NixOS installs binaries; it does not carry settings. Three different mechanisms 
 | **nothing yet** | kitty, fish, atuin, gh, gh-dash, lazygit, rclone, uv, gammastep, vicinae — these have config on the desktop that chezmoi does **not** track, so they will arrive at defaults |
 
 That last row is the real gap: those settings exist on the desktop but nothing carries them.
-Add them to chezmoi before the migration if you care about them. waybar, wofi, hyprpaper and
-hyprshot have no config on the desktop either, so they are already at parity (bare on both).
+Add them to chezmoi before the migration if you care about them.
+
+Only **waybar** and **wofi** have no config on the desktop at all, so they are already at
+parity (bare on both). hyprpaper, hyprlock and the hypr helper scripts are *not* in that
+group — their configs live inside `~/.config/hypr/` rather than in their own directories,
+and chezmoi carries the whole tree.
 
 ## Install on the laptop
 

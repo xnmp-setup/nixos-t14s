@@ -36,10 +36,10 @@
     # --- Sync / cloud (syncthing runs as a service in system.nix) ---
     rclone
 
-    # --- Browsers ---
+    # --- Browser ---
     google-chrome
-    vivaldi       # chezmoi manages .config/vivaldi AND a vivaldi-mods/ tree, so this
-                  # is clearly in real use on the desktop — it was missing here.
+    # vivaldi is installed on the desktop (and chezmoi carries .config/vivaldi +
+    # vivaldi-mods/) but is deliberately NOT on the lean laptop.
 
     # --- Tauri toolchain ---
     # You maintain github.com/xnmp/tauri-explorer, which is NOT in nixpkgs (see README).
