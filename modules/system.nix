@@ -32,7 +32,7 @@
   hardware.bluetooth.enable = true;
 
   # --- Locale / time (adjust to where you actually are) ---
-  time.timeZone = "Australia/Perth";
+  time.timeZone = "Australia/Sydney";
   i18n.defaultLocale = "en_AU.UTF-8";
   console.keyMap = "us";
 
