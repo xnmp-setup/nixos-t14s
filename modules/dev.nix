@@ -8,6 +8,8 @@
   environment.systemPackages = [
     # Your own file manager, built from its flake (same nixpkgs via follows).
     inputs.tauri-explorer.packages.${pkgs.system}.default
+    # Your keifu fork (git-graph TUI), from its flake, chong-dev branch.
+    inputs.keifu.packages.${pkgs.system}.default
   ] ++ (with pkgs; [
     # --- Terminals (all three you use; WezTerm is primary) ---
     wezterm ghostty kitty

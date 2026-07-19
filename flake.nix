@@ -14,6 +14,10 @@
     # follows = same nixpkgs as the system: one evaluation, one webkitgtk.
     tauri-explorer.url = "github:xnmp/tauri-explorer";
     tauri-explorer.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Your keifu fork (git-graph TUI) — development happens on chong-dev.
+    keifu.url = "github:xnmp/keifu/chong-dev";
+    keifu.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, nixos-hardware, ... }@inputs:
