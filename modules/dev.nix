@@ -34,7 +34,10 @@
 
     # --- Languages / build ---
     nodejs_22
+    bun           # `bunx` — used by ~/.claude/statusline.sh to run ccstatusline
     uv            # your Python toolchain
+    python3       # bare interpreter: uv doesn't put `python3` on PATH, and
+                  # ~/.claude/statusline.sh shells out to it on every render
     go
     rustup        # Rust; toolchains installed on demand
     mold          # fast linker — biggest single win on Rust link time (see README)

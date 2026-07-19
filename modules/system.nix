@@ -113,9 +113,18 @@
   # --- Login: greetd + tuigreet launches Hyprland straight into your session ---
   services.greetd = {
     enable = true;
-    settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland";
-      user = "greeter";
+    settings = {
+      default_session = {
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd Hyprland";
+        user = "greeter";
+      };
+      # Boot straight into Hyprland with no password prompt. default_session
+      # above still applies after logout, so tuigreet remains the way back in
+      # once this first session ends.
+      initial_session = {
+        command = "Hyprland";
+        user = "chong";
+      };
     };
   };
 
@@ -141,6 +150,8 @@
     nerd-fonts.jetbrains-mono
     nerd-fonts.victor-mono
     nerd-fonts.fantasque-sans-mono
+    nerd-fonts.hack         # wezterm tab-bar fallback: per-app tab icons (PUA glyphs)
+    adwaita-fonts           # Adwaita Mono — the ✢✶✻✽ Claude spinner ramp + ❋✹ status stars
     inter                   # UI font
     ubuntu-classic          # renamed from ubuntu_font_family in nixpkgs
     font-awesome            # waybar/wofi icon sets
