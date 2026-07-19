@@ -175,6 +175,21 @@ git -C /mnt/home/chong/Repos/nixos-t14s -c user.email=chonw89@gmail.com -c user.
     commit -am 'hardware-configuration for t14s'
 ```
 
+Committing defuses the dirty-tree trap but arms a second one: the commit exists **only on
+the laptop** (no push credentials there), so the moment anything else lands on origin, the
+first `git pull` reports *"your branch and origin/main have diverged."* Resolving that with
+`git reset --hard origin/main` restores the placeholder and produces exactly the unbootable
+rebuild described above — the trap fires through its committed variant. Two rules:
+
+- Resolve with `git pull --rebase`, never `reset --hard`. (Set `git config pull.rebase true`
+  on the machine and pulls do the right thing forever.)
+- Better: kill the divergence at the source. From another machine with push access, fetch
+  the commit off the laptop and push it, so origin holds the real hardware config:
+  ```bash
+  git fetch ssh://chong@<laptop>/home/chong/Repos/nixos-t14s main
+  git merge --ff-only FETCH_HEAD && git push origin main
+  ```
+
 ## 9. Install
 
 ```bash
