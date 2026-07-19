@@ -1,11 +1,14 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   # Loader shim for generic-Linux dynamic binaries (Claude Code's native
   # installer, downloaded AppImages/tools). Without it NixOS refuses them with
   # "Could not start dynamically linked executable".
   programs.nix-ld.enable = true;
 
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
+    # Your own file manager, built from its flake (same nixpkgs via follows).
+    inputs.tauri-explorer.packages.${pkgs.system}.default
+  ] ++ (with pkgs; [
     # --- Terminals (all three you use; WezTerm is primary) ---
     wezterm ghostty kitty
 
@@ -47,11 +50,12 @@
     # vivaldi-mods/) but is deliberately NOT on the lean laptop.
 
     # --- Tauri toolchain ---
-    # You maintain github.com/xnmp/tauri-explorer, which is NOT in nixpkgs (see README).
-    # These are what it needs to build from source on this machine.
+    # You maintain github.com/xnmp/tauri-explorer — installed above from its own
+    # flake. These stay for hacking on it from a plain shell (its `nix develop`
+    # shell is the fuller option).
     cargo-tauri
     webkitgtk_4_1
-  ];
+  ]);
 
   # Cache Rust builds globally; enable the mold linker per-project (README) so it
   # never surprises a build expecting the default linker.

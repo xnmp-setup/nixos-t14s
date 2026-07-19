@@ -9,6 +9,11 @@
     # Without this, nixos-hardware drags in a SECOND full nixpkgs — a needless
     # multi-hundred-MB fetch over Wi-Fi during the install.
     nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Your own file manager, built from its flake (packages.default).
+    # follows = same nixpkgs as the system: one evaluation, one webkitgtk.
+    tauri-explorer.url = "github:xnmp/tauri-explorer";
+    tauri-explorer.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, nixos-hardware, ... }@inputs:
