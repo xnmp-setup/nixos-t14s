@@ -73,10 +73,11 @@ lspci | grep -i net                          # RZ616/MT7922 *or* Qualcomm NFA725
 
 Battery health. The kernel exposes **either** `energy_*` **or** `charge_*` depending on
 what the battery reports in ACPI `_BIX` — never both — so a command hardcoding one errors
-out on half of machines. This works either way:
+out on half of machines. Nor is the battery always `BAT0` (units enumerate as `BAT1` too,
+which makes the math divide by zero). This works either way on both counts:
 
 ```bash
-b=/sys/class/power_supply/BAT0
+b=$(echo /sys/class/power_supply/BAT*)
 f=$(cat $b/{energy,charge}_full 2>/dev/null | head -1)
 d=$(cat $b/{energy,charge}_full_design 2>/dev/null | head -1)
 awk -v f=$f -v d=$d 'BEGIN{printf "battery health: %.1f%%\n", 100*f/d}'
