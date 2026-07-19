@@ -101,6 +101,10 @@
   services.syncthing = {
     enable = true;
     user = "chong";
+    # Running as a normal user: the default /var/lib/syncthing is not writable by
+    # chong, and the unit crash-loops with "mkdir: permission denied" on first boot.
+    dataDir = "/home/chong";
+    configDir = "/home/chong/.config/syncthing";
     openDefaultPorts = true;
     overrideDevices = false; # keep the devices/folders you set up in the UI
     overrideFolders = false;
