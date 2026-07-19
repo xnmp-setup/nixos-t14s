@@ -74,6 +74,18 @@
 
   services.fwupd.enable = true; # ThinkPad firmware updates from Linux
 
+  # SSH in from the desktop, key-only. Note the TP-Link router blocks wired->wireless
+  # traffic (AP isolation), so the desktop cannot connect directly; from the laptop run
+  #   ssh -R 2222:localhost:22 chong@<desktop-ip>
+  # and the desktop then reaches this machine via `ssh -p 2222 chong@localhost`.
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
+  };
+
   # Auto-renice/ionice processes by rules, same as the Arch desktop's ananicy-cpp.
   # The CachyOS ruleset is the maintained rules companion for ananicy-cpp.
   services.ananicy = {
@@ -109,6 +121,9 @@
     description = "chong";
     extraGroups = [ "wheel" "networkmanager" "video" "audio" ]; # add "docker" if you enable it
     shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAX2u1QV0nRFAohKc9dP/PgrM2wjfUY4Cshz7Ba/ds7K chong@desktop"
+    ];
   };
   programs.zsh.enable = true; # install + login shell; your .zshrc/p10k come from chezmoi
 
