@@ -1,5 +1,10 @@
 { pkgs, ... }:
 {
+  # Loader shim for generic-Linux dynamic binaries (Claude Code's native
+  # installer, downloaded AppImages/tools). Without it NixOS refuses them with
+  # "Could not start dynamically linked executable".
+  programs.nix-ld.enable = true;
+
   environment.systemPackages = with pkgs; [
     # --- Terminals (all three you use; WezTerm is primary) ---
     wezterm ghostty kitty
