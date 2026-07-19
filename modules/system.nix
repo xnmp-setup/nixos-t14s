@@ -74,6 +74,14 @@
 
   services.fwupd.enable = true; # ThinkPad firmware updates from Linux
 
+  # Auto-renice/ionice processes by rules, same as the Arch desktop's ananicy-cpp.
+  # The CachyOS ruleset is the maintained rules companion for ananicy-cpp.
+  services.ananicy = {
+    enable = true;
+    package = pkgs.ananicy-cpp;
+    rulesProvider = pkgs.ananicy-rules-cachyos;
+  };
+
   # Fingerprint reader (T14s has one) — uncomment to enable:
   # services.fprintd.enable = true;
 
