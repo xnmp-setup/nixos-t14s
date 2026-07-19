@@ -59,6 +59,10 @@
     # (Thunar mounting a drive, fwupd, NetworkManager) fails silently.
     # Needs `exec-once = systemctl --user start hyprpolkitagent` in your chezmoi hypr config.
     hyprpolkitagent
+    # F7 scratchpad app (same 2.0.11 as the desktop's ytmdesktop-bin). The wrapper
+    # matches Arch's binary name, which the hyprland.conf bind invokes.
+    ytmdesktop
+    (writeShellScriptBin "youtube-music-desktop-app" ''exec ${ytmdesktop}/bin/ytmdesktop "$@"'')
     # No notification daemon was installed on your desktop — add one if you want,
     # e.g. `mako` or `swaynotificationcenter`, then configure it via chezmoi:
     # mako
