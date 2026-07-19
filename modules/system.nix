@@ -150,6 +150,12 @@
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
+    # Trust store paths signed by the desktop (key in ~/.config/nix/ there), so
+    # heavy builds can be done on the desktop and `nix copy`'d here.
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "chong-desktop-1:X7LJ/VvDmuD+iYolAeJB3Q6RLFLKvCmH0buNtUidbRE="
+    ];
   };
   nixpkgs.config.allowUnfree = true; # obsidian, google-chrome, etc.
 
