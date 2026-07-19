@@ -24,6 +24,10 @@
     MOZ_ENABLE_WAYLAND = "1";
   };
 
+  # hyprland.conf runs `gnome-keyring-daemon --start --components=secrets`;
+  # the module ships the package and wires up PAM unlock-on-login.
+  services.gnome.gnome-keyring.enable = true;
+
   # File manager (matches your Thunar + plugins setup here).
   programs.thunar = {
     enable = true;
@@ -47,7 +51,8 @@
     hyprshot      # screenshots (you use this, not grim/slurp)
     wl-clipboard
     brightnessctl playerctl
-    gammastep     # night-light / colour temperature
+    wlsunset      # night-light — what hyprland.conf actually launches
+    gammastep     # kept: the conf has a commented gammastep fallback line
     imv           # image viewer
     # polkit authentication agent. security.polkit is only the daemon; Hyprland
     # starts no agent of its own, so without this every GUI privilege prompt
